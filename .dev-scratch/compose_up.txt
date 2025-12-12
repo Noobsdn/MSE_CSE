@@ -1,0 +1,74 @@
+#1 [internal] load local bake definitions
+#1 reading from stdin 648B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile.dev
+#2 transferring dockerfile: 165B done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/node:24-alpine
+#3 DONE 0.0s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 107B done
+#4 DONE 0.0s
+
+#5 [1/5] FROM docker.io/library/node:24-alpine@sha256:7e0bd0460b26eb3854ea5b99b887a6a14d665d14cae694b78ae2936d14b2befb
+#5 resolve docker.io/library/node:24-alpine@sha256:7e0bd0460b26eb3854ea5b99b887a6a14d665d14cae694b78ae2936d14b2befb 0.0s done
+#5 DONE 0.0s
+
+#6 [internal] load build context
+#6 transferring context: 216.79kB 0.1s done
+#6 DONE 0.1s
+
+#7 [2/5] WORKDIR /app
+#7 CACHED
+
+#8 [3/5] COPY package*.json ./
+#8 CACHED
+
+#9 [4/5] RUN npm install
+#9 CACHED
+
+#10 [5/5] COPY . .
+#10 DONE 0.4s
+
+#11 exporting to image
+#11 exporting layers
+#11 exporting layers 1.9s done
+#11 exporting manifest sha256:bc6ecd5a2870319b278ed087f6d7bc2bb0c1aac82686fcd1685571b8b7f197b2 done
+#11 exporting config sha256:8e0717f3ba5ef896ee4ee9615cfcefa1c7c6b7aa9e781e4f3ae566417ab5fa8a done
+#11 exporting attestation manifest sha256:636856a996aa2fadd703b65b63770139d8b095fb2b809f4fd22925a8a582a2c2 0.0s done
+#11 exporting manifest list sha256:fc0d11297b5331363648a9fb269fde3109de08691fe6028de27e6fdb767fcf56 done
+#11 naming to docker.io/library/delineate-delineate-app:latest done
+#11 unpacking to docker.io/library/delineate-delineate-app:latest
+#11 unpacking to docker.io/library/delineate-delineate-app:latest 0.4s done
+#11 DONE 2.4s
+
+#12 resolving provenance for metadata file
+#12 DONE 0.0s
+ delineate-delineate-app  Built
+ Container delineate-delineate-jaeger-1  Creating
+ Container delineate-delineate-minio-1  Creating
+ Container delineate-delineate-redis-1  Creating
+ Container delineate-delineate-redis-1  Created
+ Container delineate-delineate-jaeger-1  Created
+ Container delineate-delineate-minio-1  Created
+ Container delineate-minio-init-1  Creating
+ Container delineate-delineate-app-1  Creating
+ Container delineate-minio-init-1  Created
+ Container delineate-delineate-app-1  Created
+ Container delineate-frontend-1  Creating
+ Container delineate-frontend-1  Created
+ Container delineate-delineate-minio-1  Starting
+ Container delineate-delineate-jaeger-1  Starting
+ Container delineate-delineate-redis-1  Starting
+ Container delineate-delineate-redis-1  Started
+ Container delineate-delineate-jaeger-1  Started
+ Container delineate-delineate-minio-1  Started
+ Container delineate-minio-init-1  Starting
+ Container delineate-delineate-app-1  Starting
+ Container delineate-delineate-app-1  Started
+ Container delineate-frontend-1  Starting
+ Container delineate-minio-init-1  Started
+ Container delineate-frontend-1  Started

@@ -1,0 +1,142 @@
+Bringing down any existing compose stack (safe)...
+ Container delineate-frontend-1  Stopping
+ Container delineate-minio-init-1  Stopping
+ Container delineate-minio-init-1  Stopped
+ Container delineate-minio-init-1  Removing
+ Container delineate-minio-init-1  Removed
+ Container delineate-frontend-1  Stopped
+ Container delineate-frontend-1  Removing
+ Container delineate-frontend-1  Removed
+ Container delineate-delineate-app-1  Stopping
+ Container delineate-delineate-app-1  Stopped
+ Container delineate-delineate-app-1  Removing
+ Container delineate-delineate-app-1  Removed
+ Container delineate-delineate-minio-1  Stopping
+ Container delineate-delineate-redis-1  Stopping
+ Container delineate-delineate-jaeger-1  Stopping
+ Container delineate-delineate-jaeger-1  Stopped
+ Container delineate-delineate-jaeger-1  Removing
+ Container delineate-delineate-jaeger-1  Removed
+ Container delineate-delineate-minio-1  Stopped
+ Container delineate-delineate-minio-1  Removing
+ Container delineate-delineate-minio-1  Removed
+ Container delineate-delineate-redis-1  Stopped
+ Container delineate-delineate-redis-1  Removing
+ Container delineate-delineate-redis-1  Removed
+ Network delineate_default  Removing
+ Network delineate_default  Removed
+Starting dev stack (docker compose -f docker/compose.dev.yml up -d --build)
+#1 [internal] load local bake definitions
+#1 reading from stdin 648B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile.dev
+#2 transferring dockerfile: 165B done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/node:24-alpine
+#3 DONE 0.0s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 107B done
+#4 DONE 0.0s
+
+#5 [1/5] FROM docker.io/library/node:24-alpine@sha256:7e0bd0460b26eb3854ea5b99b887a6a14d665d14cae694b78ae2936d14b2befb
+#5 resolve docker.io/library/node:24-alpine@sha256:7e0bd0460b26eb3854ea5b99b887a6a14d665d14cae694b78ae2936d14b2befb 0.0s done
+#5 DONE 0.0s
+
+#6 [internal] load build context
+#6 transferring context: 304.50kB 0.1s done
+#6 DONE 0.1s
+
+#7 [2/5] WORKDIR /app
+#7 CACHED
+
+#8 [3/5] COPY package*.json ./
+#8 CACHED
+
+#9 [4/5] RUN npm install
+#9 CACHED
+
+#10 [5/5] COPY . .
+#10 DONE 0.5s
+
+#11 exporting to image
+#11 exporting layers
+#11 exporting layers 1.9s done
+#11 exporting manifest sha256:bcf098e0d7d8c19c0a00dfaa91615970e4d89f7fd7238e60097510b4260dd80b done
+#11 exporting config sha256:97bff5d0c31b6863ca96ad95731f97c96160d8bc8f87c19658843ad2cc8fdd4b done
+#11 exporting attestation manifest sha256:5e2ddf2d6cd9aef9a88d712c2e8d7e4ac8aff67ba36dd40322a25678ec0f14a0 done
+#11 exporting manifest list sha256:c49d3b1193a5d2153d5ffc4dadcc7f55fabda4e222cb28f5fac4777f3f38b1f7 done
+#11 naming to docker.io/library/delineate-delineate-app:latest done
+#11 unpacking to docker.io/library/delineate-delineate-app:latest
+#11 unpacking to docker.io/library/delineate-delineate-app:latest 0.4s done
+#11 DONE 2.4s
+
+#12 resolving provenance for metadata file
+#12 DONE 0.0s
+ delineate-delineate-app  Built
+ Network delineate_default  Creating
+ Network delineate_default  Error
+
+poll 1
+jq: error: Could not open file .dev-scratch/status.json: No such file or directory
+poll 2
+jq: error: Could not open file .dev-scratch/status.json: No such file or directory
+poll 3
+jq: error: Could not open file .dev-scratch/status.json: No such file or directory
+poll 4
+jq: error: Could not open file .dev-scratch/status.json: No such file or directory
+poll 5
+jq: error: Could not open file .dev-scratch/status.json: No such file or directory
+poll 6
+jq: error: Could not open file .dev-scratch/status.json: No such file or directory
+poll 7
+jq: error: Could not open file .dev-scratch/status.json: No such file or directory
+poll 8
+jq: error: Could not open file .dev-scratch/status.json: No such file or directory
+poll 9
+jq: error: Could not open file .dev-scratch/status.json: No such file or directory
+poll 10
+jq: error: Could not open file .dev-scratch/status.json: No such file or directory
+poll 11
+jq: error: Could not open file .dev-scratch/status.json: No such file or directory
+poll 12
+jq: error: Could not open file .dev-scratch/status.json: No such file or directory
+poll 13
+jq: error: Could not open file .dev-scratch/status.json: No such file or directory
+poll 14
+jq: error: Could not open file .dev-scratch/status.json: No such file or directory
+poll 15
+jq: error: Could not open file .dev-scratch/status.json: No such file or directory
+poll 16
+jq: error: Could not open file .dev-scratch/status.json: No such file or directory
+poll 17
+jq: error: Could not open file .dev-scratch/status.json: No such file or directory
+poll 18
+jq: error: Could not open file .dev-scratch/status.json: No such file or directory
+poll 19
+jq: error: Could not open file .dev-scratch/status.json: No such file or directory
+poll 20
+jq: error: Could not open file .dev-scratch/status.json: No such file or directory
+poll 21
+jq: error: Could not open file .dev-scratch/status.json: No such file or directory
+poll 22
+jq: error: Could not open file .dev-scratch/status.json: No such file or directory
+poll 23
+jq: error: Could not open file .dev-scratch/status.json: No such file or directory
+poll 24
+jq: error: Could not open file .dev-scratch/status.json: No such file or directory
+poll 25
+jq: error: Could not open file .dev-scratch/status.json: No such file or directory
+poll 26
+jq: error: Could not open file .dev-scratch/status.json: No such file or directory
+poll 27
+jq: error: Could not open file .dev-scratch/status.json: No such file or directory
+poll 28
+jq: error: Could not open file .dev-scratch/status.json: No such file or directory
+poll 29
+jq: error: Could not open file .dev-scratch/status.json: No such file or directory
+poll 30
+jq: error: Could not open file .dev-scratch/status.json: No such file or directory
+Done smoke run

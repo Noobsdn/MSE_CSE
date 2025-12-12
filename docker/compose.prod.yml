@@ -1,0 +1,57 @@
+name: delineate
+
+services:
+  delineate-app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.prod
+    ports:
+      - "3000:3000"
+    volumes:
+      - ../src:/app/src
+      - ../.env:/app/.env:ro
+    env_file:
+      - ../.env
+    environment:
+      - NODE_ENV=production
+      - S3_ENDPOINT=http://delineate-minio:9000
+      - S3_ACCESS_KEY_ID=minioadmin
+      - S3_SECRET_ACCESS_KEY=minioadmin
+      - S3_BUCKET_NAME=downloads
+      - S3_FORCE_PATH_STYLE=true
+    restart: unless-stopped
+    depends_on:
+      - delineate-minio
+
+  delineate-redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+
+  delineate-minio:
+    image: minio/minio:latest
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+
+  minio-init:
+    image: minio/mc:latest
+    depends_on:
+      - delineate-minio
+    entrypoint: ["/bin/sh", "-c"]
+    command: >
+      /usr/bin/mc alias set myminio http://delineate-minio:9000 minioadmin minioadmin &&
+      /usr/bin/mc mb myminio/downloads --ignore-existing || exit 0
+    environment:
+      - MC_CONFIG_DIR=/root/.mc
+
+volumes:
+  minio_data:
+    driver: local
