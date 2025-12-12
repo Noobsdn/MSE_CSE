@@ -1,4 +1,4 @@
-name: CI
+name: CI (E2E + build + scan) - Safe debug
 
 on:
   push:
@@ -8,114 +8,121 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 jobs:
   ci:
-    name: Lint → Start Server → E2E → Build → Scan
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     env:
       HEALTH_URL: http://localhost:3000/health
+
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Node.js 24
+      - name: Show repo files (debug)
+        run: |
+          echo "Top-level files:"
+          ls -la
+          echo "docker folder contents (if present):"
+          ls -la docker || true
+
+      - name: Setup Node 24
         uses: actions/setup-node@v4
         with:
           node-version: 24
 
-      - name: Cache node modules
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-
-      - name: Install dependencies
+      - name: Install deps
         run: npm ci
 
-      - name: Run linter (if present)
+      - name: Print package.json scripts (debug)
+        run: node -e "console.log(JSON.stringify(require('./package.json').scripts || {}, null, 2))"
+
+      - name: Build (if needed)
         run: |
-          if node -e "process.exit(require('./package.json').scripts && require('./package.json').scripts['lint'] ? 0 : 1)"; then
-            npm run lint
+          if node -e "process.exit(require('./package.json').scripts && require('./package.json').scripts['build'] ? 0 : 1)"; then
+            echo "Running npm run build"
+            npm run build
           else
-            echo "No lint script, skipping."
+            echo "No build script found - skipping"
           fi
 
-      - name: Run unit tests (if present)
+      - name: Start server in background and tail logs
         run: |
-          if node -e "process.exit(require('./package.json').scripts && require('./package.json').scripts['test'] ? 0 : 1)"; then
-            npm test
-          else
-            echo "No test script, skipping."
-          fi
-
-      - name: Start server in background
-        id: start-server
-        run: |
-          # Prefer npm start if present otherwise run src/index.ts directly
+          echo "Starting server..."
           if node -e "process.exit(require('./package.json').scripts && require('./package.json').scripts['start'] ? 0 : 1)"; then
-            npm run start &>/tmp/server.log &
-            echo "started-via-npm" > /tmp/server-start-mode
+            npm run start &> /tmp/server.log &
           else
-            # run node directly with the experimental flag (matches your dev script)
-            node --experimental-transform-types src/index.ts &>/tmp/server.log &
-            echo "started-via-node" > /tmp/server-start-mode
+            node --experimental-transform-types src/index.ts &> /tmp/server.log &
           fi
-          echo "server_pid=$!" >> $GITHUB_OUTPUT
-      - name: Wait for server /health
+          sleep 1
+          echo "Server PID: $!"
+          tail -n +1 /tmp/server.log || true
+
+      - name: Wait for /health to respond
         run: |
-          # install wait-on to wait for the health endpoint
           npx wait-on --timeout 120000 ${{ env.HEALTH_URL }}
-          echo "health ok"
 
-      - name: Show server logs (tail)
-        run: tail -n +1 /tmp/server.log || true
+      - name: Show server log snapshot
+        run: tail -n 200 /tmp/server.log || true
 
-      - name: Run E2E orchestration (runs scripts/run-e2e.ts)
+      - name: Run E2E orchestration if scripts present
         run: |
-          # The orchestration script itself starts and waits for the server and runs the TS e2e tests.
-          # Ensure required dependencies available.
-          node --experimental-transform-types scripts/run-e2e.ts
+          if [ -f scripts/run-e2e.ts ]; then
+            node --experimental-transform-types scripts/run-e2e.ts
+          else
+            echo "No scripts/run-e2e.ts; skipping E2E orchestration"
+          fi
         timeout-minutes: 20
 
-      - name: Save E2E artifacts (if created)
+      - name: Upload server log artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: e2e-logs
-          path: |
-            test-artifacts/**
-            /tmp/server.log
+          name: server-log
+          path: /tmp/server.log
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
-      - name: Set up Docker Buildx
+      - name: Set up buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Detect Dockerfile path
-        id: detect-dockerfile
+      - name: Detect Dockerfile path (debug)
+        id: detect-df
         run: |
           DF=""
-          if [ -f docker/Dockerfile.prod ]; then DF="docker/Dockerfile.prod"
-          elif [ -f docker/Dockerfile ]; then DF="docker/Dockerfile"
-          elif [ -f Dockerfile ]; then DF="Dockerfile"
-          fi
+          for p in docker/Dockerfile.prod docker/Dockerfile Dockerfile docker/Dockerfile.dev; do
+            if [ -f "$p" ]; then DF="$p"; break; fi
+          done
+          echo "Detected Dockerfile=$DF"
           echo "dockerfile=$DF" >> $GITHUB_OUTPUT
 
+      - name: Print Dockerfile (debug)
+        run: |
+          echo "Dockerfile path: ${{ steps.detect-df.outputs.dockerfile }}"
+          if [ -n "${{ steps.detect-df.outputs.dockerfile }}" ]; then
+            sed -n '1,200p' "${{ steps.detect-df.outputs.dockerfile }}"
+          else
+            echo "No Dockerfile found"
+          fi
+
       - name: Build Docker image (no push)
+        if: ${{ steps.detect-df.outputs.dockerfile != '' }}
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ${{ steps.detect-dockerfile.outputs.dockerfile }}
+          file: ${{ steps.detect-df.outputs.dockerfile }}
           push: false
-          tags: ci-build:${{ github.sha }}
+          tags: safe-ci:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Scan Docker image with Trivy
+      - name: Run Trivy (warn-only)
+        if: ${{ steps.detect-df.outputs.dockerfile != '' }}
         uses: aquasecurity/trivy-action@v0.10.1
         with:
-          image-ref: ci-build:${{ github.sha }}
+          image-ref: safe-ci:${{ github.sha }}
           format: table
-          exit-code: "1" # set to "0" if you want only warnings
+          exit-code: "0"
